@@ -1,0 +1,10 @@
+{
+  "name": "site-deploy-scripts",
+  "private": true,
+  "type": "module",
+  "description": "Portable rclone sync + Tencent CDN purge scripts for site-deploy skill",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "tencentcloud-sdk-nodejs-cdn": "^4.1.135"
+  }
+}

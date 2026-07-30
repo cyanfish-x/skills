@@ -1,0 +1,4 @@
+interface:
+  display_name: "站点部署"
+  short_description: "rclone 同步前端产物并可选刷新腾讯云 CDN"
+  default_prompt: "使用 $skill-site-deploy 部署当前站点"
