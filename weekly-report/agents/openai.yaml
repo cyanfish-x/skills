@@ -1,0 +1,4 @@
+interface:
+  display_name: "周报生成"
+  short_description: "基于Git提交记录按模块生成中文工作周报"
+  default_prompt: "使用 $skill-weekly-report 生成本周工作周报"
