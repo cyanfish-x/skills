@@ -1,0 +1,4 @@
+interface:
+  display_name: "前端调试"
+  short_description: "假设驱动+埋点取证的前端bug调试，自动埋点收集日志定位根因"
+  default_prompt: "使用 $skill-frontend-debug 调试这个前端问题"
