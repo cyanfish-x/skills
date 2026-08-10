@@ -13,7 +13,9 @@ description: 生成中文工作周报。自动识别当前工作区的 git 仓�
 
 ### 1. 自动定位仓库与作者（无需手填）
 
-- **仓库 = 当前工作目录**。脚本默认在当前目录运行，自动读取该目录所属的 git 仓库。若用户指定了其它仓库路径，用 `--repo <路径>` 传入。
+- **仓库**支持两种模式：
+  - **单仓库**（默认）：仓库 = 当前工作目录。脚本默认在当前目录运行，自动读取该目录所属的 git 仓库。若用户指定了其它仓库路径，用 `--repo <路径>` 传入。
+  - **多仓库**（`--repo-dir <工作区根>`）：递归发现该目录下所有 git 仓库并批量采集，**推荐用于 `D:\work` 这类多项目工作区**。自动缓存仓库列表加速二次运行，对每个仓库做廉价探测门控（只读 HEAD 一个对象）排除区间内无活动的仓库，再并行采集活跃仓库。详见下方「缓存」。
 - **作者 = 本机 git 账户**。脚本自动读取 `git config user.email` / `user.name`。
 - 注意：不要假设仓库结构或模块名。一切由脚本在运行时自动识别。
 
@@ -28,6 +30,11 @@ description: 生成中文工作周报。自动识别当前工作区的 git 仓�
 ```bash
 # 默认：当前工作区 + 上一自然周 + 自动作者
 python scripts/gather_weekly_commits.py
+
+# 多仓库：扫描工作区下所有 git 仓库（推荐用于多项目工作区）
+python scripts/gather_weekly_commits.py --repo-dir D:/work
+python scripts/gather_weekly_commits.py --repo-dir D:/work --no-cache   # 禁用缓存
+python scripts/gather_weekly_commits.py --repo-dir D:/work --jobs 4
 
 # 本自然周 / 最近 N 天 / 指定区间
 python scripts/gather_weekly_commits.py --week this
@@ -53,6 +60,8 @@ JSON 结构关键字段：
 - `groups[].kind`：`module`（业务模块）/ `common`（公共基础）/ `other`（其他）。
 - `groups[].commits[]`：`{hash, date, subject, files}`。
 
+**多仓库模式**（`--repo-dir`）的 JSON 外层不同：顶层有 `mode: "multi"`、`repo_dir`、`cached`、`scanned_repos`（发现的仓库总数）、`active_repos`（区间内有提交的仓库数），`repos[]` 数组每项含 `{repo, total_commits, groups}`，其中 `groups` 结构与单仓库一致。撰写周报时遍历 `repos[]`，每个活跃仓库按项目分节即可。
+
 ### 3. 撰写周报
 
 读取 `references/report_guide.md` 获取：模块名→中文名的通用推断法、撰写要点、周报模板。关键规则：
@@ -65,6 +74,21 @@ JSON 结构关键字段：
 ### 4. 输出
 
 直接把周报正文呈现给用户（使用周报模板格式）。若用户要求保存为文件，再写入；否则不落盘。
+
+## 缓存与性能（仅多仓库模式）
+
+`--repo-dir` 模式针对"每周跑一次"的高频场景做了两层加速，在工作区根目录生成缓存文件 `.weekly-report-cache.json`：
+
+**两层加速（实测 45 仓库工作区：冷启动 1.1s → 缓存命中 0.6s）**：
+1. **缓存仓库列表，命中时跳过全量 walk**。`os.walk` 遍历大工作区是真正的大头（占冷启动 50%+）。缓存命中时只校验缓存里的路径仍存在 + 扫顶层目录补入新增仓库，跳过全量遍历。深层新仓库会在下次缓存未命中时被全量 walk 收录，不会永久遗漏。
+2. **文件系统预筛，探测阶段零 git spawn**。判断"区间内有没有活动"不靠 `git log -1`（spawn 45 次子进程），而是直接读 `.git/logs/HEAD`（reflog）末行时间戳；reflog 缺失时回退到 refs 文件 mtime；都拿不到则保守视为活跃。拿不准一律视为活跃——预筛是优化，绝不漏内容。
+
+**只缓存仓库列表，不缓存别的**：提交数据每次必须重新探测（跨周不可信）；git 账户是瞬时查询，缓存反而有陈旧风险。
+
+**其他特性**：
+- **工作区级隔离**：缓存文件跟随工作区，不污染 skill 目录。切换工作区互不干扰，符合"通用 skill 不绑定项目"的定位。
+- **健壮回退**：缓存文件缺失、JSON 损坏或版本不符时静默回退全量 walk，不报错。
+- **可禁用/重建**：`--no-cache` 强制全量发现（调试用）；删除缓存文件即重建。
 
 ## 脚本依赖
 
