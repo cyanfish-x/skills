@@ -161,7 +161,7 @@ abbrlink: 8位十六进制   # 唯一短链,见下文
 - `date` / `updated` 用 `YYYY-M-D HH:MM:SS` 格式(M/D 不补零,如 `2026-1-10 23:23:35`)。
 - `cover` 留给作者填,不要瞎编;可写占位注释提醒。
 - `categories` 通常 1 个,`tags` 2~4 个。
-- `abbrlink`:文章 51 提到本博客已配置自动生成 abbrlink 插件,**新建文章时留空或让插件生成,不要手动瞎写**。如果是手写场景,生成 8 位随机十六进制。
+- `abbrlink`:必填 8 位十六进制(如 `58d007dc`)。**本博客不自动生成,漏填会渲染成 `null.html`**。新建文章时生成一个不与现有文章冲突的 8 位 hex(可用随机数,写完用 `grep -h "^abbrlink:" source/_posts/*.md` 查重)。参考文章 62 的写法。
 - 文件名:`NN-标题.md`,NN 是接着现有最大编号 +1(当前最大 62)。
 
 ## 6. 代码块规范
@@ -295,7 +295,7 @@ grep -niE "\[cite|oaicite|contentReference" 文章.md   # 模型残留标记,必
 - [ ] 关键词、数字、结论有加粗?用了 `>` 引用块强调重点?
 - [ ] 代码块带了语言标识和中文注释?
 - [ ] 截图位置留好了占位?(不要编造图片 URL)
-- [ ] frontmatter 完整、date 格式 `YYYY-M-D HH:MM:SS`、abbrlink 留空或合法?
+- [ ] frontmatter 完整、date 格式 `YYYY-M-D HH:MM:SS`、abbrlink 是 8 位十六进制且不与现有文章冲突?
 - [ ] 文件名编号正确(承接现有最大编号)?
 - [ ] 通读一遍，语气像一个老哥在讲，而不是教科书?
 - [ ] **口头禅频率:同一口头禅全文 ≤2 次?(grep 统计，超了删到 2 次以内)**
@@ -316,7 +316,7 @@ grep -niE "\[cite|oaicite|contentReference" 文章.md   # 模型残留标记,必
 4. 按第 8 节过一遍"语句通顺与语义连贯"。
 5. 按第 9 节过一遍"去 AI 味"过滤器。
 6. 用第 10 节清单自检(含语句通顺、去 AI 味条目)。
-7. 输出到 `source/_posts/NN-标题.md`,把 abbrlink 和 cover 留给作者。
+7. 输出到 `source/_posts/NN-标题.md`,abbrlink 填 8 位 hex(查重),cover 留给作者。
 
 ## 12. 反例(避免这些)
 
