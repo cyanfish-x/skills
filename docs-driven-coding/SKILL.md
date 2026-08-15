@@ -1,5 +1,5 @@
 ---
-name: docs-driven-dev
+name: docs-driven-coding
 description: >-
   文档驱动 Agent 开发工作流：初始化 docs/{intent,spec,adr}，安全处理老项目目录冲突，
   按三类变更强制同步文档，可选从代码生成带「推测」标记的重建草稿（须确认后落盘）。

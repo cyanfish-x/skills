@@ -1,4 +1,4 @@
-﻿interface:
+interface:
   display_name: "文档驱动开发"
   short_description: "初始化 docs/intent/spec/adr，强制同步文档，可选从代码重建草稿"
-  default_prompt: "使用 $skill-docs-driven-dev 按文档驱动工作流处理"
+  default_prompt: "使用 $skill-docs-driven-coding 按文档驱动工作流处理"
