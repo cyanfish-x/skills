@@ -1,6 +1,6 @@
 ---
 name: tellux-use
-description: How to write application code with Tellux — a Three.js-based GIS viewer library for loading terrain, imagery, 3D Tiles, atmosphere, clouds and models on a digital globe. Use this whenever the user is building an app with Tellux: initializing the viewer, adding imagery/terrain/3D-tiles layers, placing models at coordinates, configuring atmosphere/clouds/post-processing, doing camera flights, picking, or height sampling — even if they don't say the word "tellux" but mention globe/terrain/3D-tiles/cesium-ion combined with three.js. Produces runnable TypeScript/JavaScript code plus concise Chinese explanations, and points to the right guide/docs pages.
+description: How to write application code with Tellux — a Three.js-based GIS viewer library for loading terrain, imagery, 3D Tiles, atmosphere, clouds and models on a digital globe. Use this whenever the user is building an app with Tellux - initializing the viewer, adding imagery/terrain/3D-tiles layers, placing models at coordinates, configuring atmosphere/clouds/post-processing, doing camera flights, picking, or height sampling - even if they don't say the word "tellux" but mention globe/terrain/3D-tiles/cesium-ion combined with three.js. Produces runnable TypeScript/JavaScript code plus concise Chinese explanations, and points to the right guide/docs pages.
 ---
 
 # Tellux 应用开发助手
