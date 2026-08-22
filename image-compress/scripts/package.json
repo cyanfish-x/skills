@@ -1,0 +1,9 @@
+{
+  "name": "image-compress-scripts",
+  "private": true,
+  "type": "module",
+  "description": "Thin image compression wrapper for image-compress skill",
+  "dependencies": {
+    "sharp": "0.35.3"
+  }
+}
