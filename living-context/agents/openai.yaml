@@ -1,0 +1,4 @@
+interface:
+  display_name: "Living Context"
+  short_description: "按任务检索和核验项目知识，保留昂贵发现，局部更新过期结论与入口"
+  default_prompt: "使用 $living-context 为当前任务检索相关项目知识，核对证据与约束，并在任务结束时做必要的局部维护。"
