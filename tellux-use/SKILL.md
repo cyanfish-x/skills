@@ -1,11 +1,11 @@
 ---
 name: tellux-use
-description: STALE during Tellux 1.0 API migration — do not use for implementing or refactoring the tellux library. How to write application code with Tellux after the 1.0 docs sync. Currently still documents 0.2 APIs (viewer.layers, load3DTileset, addModel, setTerrain, viewer.highlight, scene.postProcess). Do not use when working in the tellux repo on the 1.0 stable API, or when the user mentions API稳定版 / 破坏式变更方案.
+description: STALE — still documents Tellux 0.2 APIs (viewer.layers, load3DTileset, addModel, setTerrain, viewer.highlight, scene.postProcess). For current (0.3) application code use the tellux repo skill `.agents/skills/tellux/`. Do not use for implementing or refactoring the tellux library.
 ---
 
 # Tellux 应用开发助手
 
-> **过期（1.0 施工中）**：本 skill 与 `references/` 仍是 Tellux 0.2 公开 API。实现 tellux 库或按 1.0 方案改代码时 **不要使用本 skill**；目标形状以 tellux 仓库 `notes/架构/API稳定版破坏式变更方案.md` 为准。1.0 文档同步完成前也不要按本 skill 给应用写新代码。
+> **过期**：本 skill 与 `references/` 仍是 Tellux 0.2 公开 API。实现 tellux 库或给应用写当前代码时 **不要使用本 skill**；现行写法见 tellux 仓库 `.agents/skills/tellux/` 与 `docs/guide/migration-0.3.md`。公开 API 随 0.3 发布，不是 1.0。
 
 Tellux 是一个基于 Three.js 的 ESM TypeScript 库，用于在网页里构建数字地球、加载 Cesium 地形 / 影像 / 3D Tiles，并集成大气、体积云和后处理。本 skill 辅助你为**使用 Tellux 的应用**编写正确、可运行的代码。
 
