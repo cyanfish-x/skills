@@ -235,6 +235,23 @@ def classify_path(path, module_regex=None):
     return "other", "other"
 
 
+def filter_by_author_date(commits, since, until):
+    """只保留 author date 落在 [since, until] 内的提交。
+
+    `git log --since/--until` 按 **committer date** 过滤。rebase 后
+    committer date 会变成新时间，上周写的提交会被算进本周，但 IDE
+    时间线显示的仍是 author date。周报口径与界面一致，以 author date 为准。
+    """
+    since_s = str(since)[:10]
+    until_s = str(until)[:10]
+    kept = []
+    for c in commits:
+        d = (c.get("date") or "")[:10]
+        if since_s <= d <= until_s:
+            kept.append(c)
+    return kept
+
+
 def parse_log(raw):
     """解析 `git log --pretty=format:SEP... --name-only` 的输出为提交列表。"""
     commits = []
@@ -537,8 +554,12 @@ def filter_active_by_probe(repos, since_ts):
 
 # ───────────────────────── 单仓库采集 ─────────────────────────
 
-def gather_repo(repo, author, since_dt, until_dt):
-    """采集单个仓库的提交并分组。返回 dict（含 total_commits / groups）。"""
+def gather_repo(repo, author, since_dt, until_dt, module_regex=None):
+    """采集单个仓库的提交并分组。返回 dict（含 total_commits / groups）。
+
+    git 的 --since/--until 按 committer date 预筛；再按 author date
+    （%ad，与 IDE 时间线一致）裁到 since_dt～until_dt。
+    """
     raw = run_git([
         "log", "--no-merges",
         f"--since={since_dt}",
@@ -548,8 +569,8 @@ def gather_repo(repo, author, since_dt, until_dt):
         f"--pretty=format:{SEP}%h|%ad|%s",
         "--name-only",
     ], repo)
-    commits = parse_log(raw)
-    groups = group_commits(commits)
+    commits = filter_by_author_date(parse_log(raw), since_dt, until_dt)
+    groups = group_commits(commits, module_regex)
     return {"total_commits": len(commits), "groups": groups}
 
 
@@ -609,18 +630,9 @@ def run_single(args):
     since_dt = f"{since} 00:00:00"
     until_dt = f"{until} 23:59:59"
 
-    raw = run_git([
-        "log", "--no-merges",
-        f"--since={since_dt}",
-        f"--until={until_dt}",
-        f"--author={author}",
-        "--date=short",
-        f"--pretty=format:{SEP}%h|%ad|%s",
-        "--name-only",
-    ], repo)
-
-    commits = parse_log(raw)
-    groups = group_commits(commits, args.module_regex)
+    result = gather_repo(repo, author, since_dt, until_dt, args.module_regex)
+    commits_n = result["total_commits"]
+    groups = result["groups"]
 
     output = {
         "repo": repo,
@@ -632,12 +644,12 @@ def run_single(args):
             "until": str(until),
             "label": label,
         },
-        "total_commits": len(commits),
+        "total_commits": commits_n,
         "groups": groups,
     }
     sys.stderr.write(
         f"[完成] {label} {since} ~ {until} | 作者={author} | "
-        f"提交={len(commits)} | 分组={len(groups)}\n"
+        f"提交={commits_n} | 分组={len(groups)}\n"
     )
     print(json.dumps(output, ensure_ascii=False, indent=2))
 

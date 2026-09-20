@@ -52,6 +52,8 @@ python scripts/gather_weekly_commits.py --module-regex 'com/(\w+)/'
 
 脚本 **stdout 输出 JSON**（机器读取），stderr 输出一行人可读摘要。只解析 stdout 的 JSON。脚本路径相对本 skill 目录：`scripts/gather_weekly_commits.py`。
 
+**日期口径（强制）**：周报按 IDE / git 时间线显示的日期，即 **author date**，不以 rebase 后的 committer date 为准。`git log --since/--until` 默认按 committer date，rebase 会把上周提交算进本周；脚本已按 author date 二次过滤。撰写前仍须核对：每条采用的提交，其 JSON `date` 必须落在 `range.since`～`range.until`；`date` 早于区间的提交视为上周工作，禁止写入本周周报。
+
 JSON 结构关键字段：
 
 - `range`：时间区间与标签（`since`/`until`/`label`）。
