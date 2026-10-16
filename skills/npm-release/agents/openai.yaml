@@ -1,0 +1,4 @@
+interface:
+  display_name: "npm 发版"
+  short_description: "通用 npm 包发版：准备 → 用户手动 publish → 推 tag/Release"
+  default_prompt: "使用 $skill-npm-release 按通用流程发版当前包"
