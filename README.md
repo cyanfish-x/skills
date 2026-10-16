@@ -11,22 +11,26 @@ skills/            自研 skill（每个子目录一个，含 SKILL.md）
 agent-skills/      上游 addyosmani/agent-skills 的 git 子模块（只存指针，不复制内容）
 agent-skills.conf  从上游启用的 skill 清单
 scripts/           junction 同步等维护脚本
-agents/            子 agent 配置的版本化存档
+agents/            子 agent 定义
 design/            living-context 的版本设计笔记（非 skill）
 ```
 
 ## 自研 skill
 
-| Skill | 说明 |
-| --- | --- |
-| [cyanfish-write](skills/cyanfish-write) | 青花鱼博客（Hexo）写作风格指南：口语化、类比、结构规范，含语句通顺与去 AI 味自查 |
-| [frontend-debug](skills/frontend-debug) | 前端浏览器 bug 的假设驱动调试：注入埋点 → 用户复现 → 读日志验证/证伪猜想，迭代定位根因 |
-| [image-compress](skills/image-compress) | 用 sharp 压缩图片；`--max-bytes` 时自动降质量逼近目标体积，格式转换与缩放仅在明确要求时进行 |
-| [living-context](skills/living-context) | 项目知识的检索、核验与局部维护：复用非显然约束与历史决策，按需沉淀高价值根因与结论 |
-| [npm-release](skills/npm-release) | 通用 npm 发版助手：识别包管理器与发版脚本，bump semver、整理 CHANGELOG、打 tag、建 GitHub Release |
-| [site-deploy](skills/site-deploy) | 前端站点部署：构建产物经 rclone 增量同步到服务器，可选腾讯云 CDN 路径刷新 |
-| [tellux-use](skills/tellux-use) | Tellux 0.2 API 参考（已过期，0.3 起请改用 tellux 仓库内的 skill） |
-| [weekly-report](skills/weekly-report) | 按本机 git 账户上周（或指定区间）的提交生成中文工作周报，按功能模块分组润色 |
+
+| Skill                                   | 说明                                                                      |
+| --------------------------------------- | ----------------------------------------------------------------------- |
+| [cyanfish-write](skills/cyanfish-write) | 青花鱼博客（Hexo）写作风格指南：口语化、类比、结构规范，含语句通顺与去 AI 味自查                            |
+| [frontend-debug](skills/frontend-debug) | 前端浏览器 bug 的假设驱动调试：注入埋点 → 用户复现 → 读日志验证/证伪猜想，迭代定位根因                       |
+| [image-compress](skills/image-compress) | 用 sharp 压缩图片；`--max-bytes` 时自动降质量逼近目标体积，格式转换与缩放仅在明确要求时进行                |
+| [living-context](skills/living-context) | 项目知识的检索、核验与局部维护：复用非显然约束与历史决策，按需沉淀高价值根因与结论                               |
+| [npm-release](skills/npm-release)       | 通用 npm 发版助手：识别包管理器与发版脚本，bump semver、整理 CHANGELOG、打 tag、建 GitHub Release |
+| [site-deploy](skills/site-deploy)       | 前端站点部署：构建产物经 rclone 增量同步到服务器，可选腾讯云 CDN 路径刷新                             |
+| [tellux-use](skills/tellux-use)         | Tellux 0.2 API 参考（已过期，0.3 起请改用 tellux 仓库内的 skill）                       |
+| [weekly-report](skills/weekly-report)   | 按本机 git 账户上周（或指定区间）的提交生成中文工作周报，按功能模块分组润色                                |
+
+
+
 
 ## 引用上游 skill（agent-skills 子模块）
 
@@ -66,6 +70,18 @@ git add agent-skills && git commit
 两个脚本面向 Windows（Git Bash 调 PowerShell 创建 junction），重复执行幂等；
 只增删指向本仓库的 junction，其他链接和实体目录一律不动。自研 skill 修改后
 直接 commit 即可，junction 指向仓库目录，改动即时生效。
+
+## 子 agent（agents/）
+
+[agents/](agents) 每个文件定义一个子 agent，格式与 ZCode 插件内置 agent 一致：
+frontmatter 含 `name`、`description`（主模型靠它判断何时分派）、`model`、
+`thoughtLevel`、`tools`，正文为系统提示词。[fast-worker](agents/fast-worker.md)
+是通用模板——把机械性任务（查找/读取/按指令改文件、跑命令汇总输出）交给轻量
+快速模型执行，接入时在 frontmatter 填入本机可用的模型 ID 即可，不填则继承主会话模型。
+
+用户级接入路径为 `~/.zcode/agents/`。junction 只能链接目录、无法链接单个文件，
+所以本目录内容需手动复制过去；仓库侧是未绑定模型的模板，`~/.zcode/agents/`
+下是绑定模型的实例，改模板后记得同步实例。
 
 ## License
 
