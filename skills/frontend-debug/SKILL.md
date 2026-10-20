@@ -73,7 +73,7 @@ grep '"probe_id": "H1"' .frontend-debug/logs.jsonl
 
 - 全部证伪 → 缩小范围或提新猜想，回到第 2 步补埋点（服务不用重启）
 - 某猜想证实 → 锁定根因，修代码
-- 修复后 → **清理所有埋点**并停止服务：
+- 修复后 → **清理所有埋点**、停止服务，并**删除日志目录**（`.frontend-debug/` 是临时调试产物，定位完成即无价值——不留存、不入 git、也不必 gitignore）：
 
 ```bash
 # 清理某文件的全部埋点
@@ -83,13 +83,16 @@ python scripts/inject_probe.py --clean src/pages/xxx/index.vue --probe-id H1
 
 # 停止日志服务（用第 3 步记下的 pid）
 kill <pid>
+
+# 删除日志目录（临时产物，最后一步）
+rm -rf .frontend-debug
 ```
 
 ## 埋点原则
 
 1. **catch 静默**：埋点代码必须 `.catch(() => {})`，服务没开也不能影响业务。
 2. **region 标记**：用 `// #region probe <id>` / `// #endregion` 包裹，便于批量清理，绝不遗留。
-3. **调完即清**：定位并修复后，必须清理所有埋点 + 停服务。不要把埋点提交进 git。
+3. **调完即清**：定位并修复后，必须清理所有埋点 + 停服务 + 删除 `.frontend-debug/` 日志目录（临时产物，直接删，不要留着或提议 gitignore）。不要把埋点提交进 git。
 4. **采集最小集**：只采能区分猜想的字段；避免采集大对象/敏感数据。
 5. **时序问题用 RAF 复查**：异步/重渲染场景，在埋点里再用 `requestAnimationFrame` 采一帧（见 `references/probe_patterns.md`）。
 
